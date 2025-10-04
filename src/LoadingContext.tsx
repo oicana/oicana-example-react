@@ -17,8 +17,8 @@ export const LoadingScreen: FC<PropsWithChildren> = ({ children }) => {
         index.set('fonts', 'fonts-0.1.0.zip');
         index.set('invoice_zugferd', 'invoice_zugferd-0.1.0.zip');
         index.set('minimal', 'minimal-0.1.0.zip');
-        index.set('test', 'test-0.1.0.zip');
-        index.set('test_multi_input', 'test_multi_input-0.1.0.zip');
+        index.set('table', 'table-0.1.0.zip');
+        index.set('multi_input', 'multi_input-0.1.0.zip');
         return index;
     }, []);
 
