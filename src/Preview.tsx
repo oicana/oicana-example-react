@@ -3,6 +3,7 @@ import { useTemplates } from './LoadingContext.tsx';
 import {
     PreviewContent,
     PreviewHeader,
+    PreviewImageContainer,
     PreviewOutput,
     PreviewOutputContainer,
     PreviewPage,
@@ -11,10 +12,21 @@ import {
 import { ExportFormat, useTemplate } from './TemplateProvider.tsx';
 import { InputsEditor } from './InputsEditor.tsx';
 import { Box, Button, FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { ErrorDisplay } from './ErrorDisplay.tsx';
 
 export const Preview: FC = () => {
-    const { timings, image, pixelsPerPt, setPixelsPerPt, setTemplateId, templateId, compile, workerState } =
-        useTemplate();
+    const {
+        timings,
+        image,
+        pixelsPerPt,
+        setPixelsPerPt,
+        setTemplateId,
+        templateId,
+        compile,
+        workerState,
+        error,
+        clearError,
+    } = useTemplate();
     const templates = useTemplates();
     const templateIds = useMemo(() => Array.from(templates.keys()), [templates]);
 
@@ -88,7 +100,10 @@ export const Preview: FC = () => {
             <PreviewContent>
                 <InputsEditor />
                 <PreviewOutputContainer>
-                    {image && <PreviewOutput src={image} alt={'Template preview'} />}
+                    <PreviewImageContainer>
+                        {image && <PreviewOutput src={image} alt={'Template preview'} />}
+                    </PreviewImageContainer>
+                    {error && <ErrorDisplay error={error} onClose={clearError} />}
                 </PreviewOutputContainer>
             </PreviewContent>
         </PreviewPage>

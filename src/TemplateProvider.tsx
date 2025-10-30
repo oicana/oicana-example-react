@@ -37,6 +37,8 @@ interface TemplateState {
     inputs?: Inputs;
     defaultJsonDatasets: Map<string, string>;
     workerState: WorkerState;
+    error?: string;
+    clearError: () => void;
 }
 
 export type WorkerState = 'ready' | 'error' | 'initializing';
@@ -55,6 +57,8 @@ export const useTemplate = () => {
         templateId,
         defaultJsonDatasets,
         workerState,
+        error,
+        clearError,
     } = useContext(TemplateContext);
 
     return {
@@ -70,6 +74,8 @@ export const useTemplate = () => {
         templateId,
         defaultJsonDatasets,
         workerState,
+        error,
+        clearError,
     };
 };
 
@@ -83,6 +89,7 @@ const TemplateContext = createContext<TemplateState>({
     updateBlobInputs: () => {},
     defaultJsonDatasets: new Map(),
     workerState: 'initializing',
+    clearError: () => {},
 });
 
 export enum ExportFormat {
@@ -119,6 +126,11 @@ export const TemplateProvider: FC<PropsWithChildren> = ({ children }) => {
     const [pixelsPerPt, setPixelsPerPt] = useState<number>(1);
     const [timings, setTimings] = useState<number[]>([]);
     const [image, setImageUrl] = useState<string>();
+    const [error, setError] = useState<string | undefined>(undefined);
+
+    const clearError = useCallback(() => {
+        setError(undefined);
+    }, []);
 
     useEffect(() => {
         if (!sharedWorkerRef.current || templateId === undefined) {
@@ -201,11 +213,18 @@ export const TemplateProvider: FC<PropsWithChildren> = ({ children }) => {
                 case TemplatingWorkerResponseKind.Preview: {
                     setTimings((timings) => [timings[0], Date.now()]);
                     setImageUrl(URL.createObjectURL(new Blob([event.data.data], { type: 'image/png' })));
+                    setError(undefined);
                     break;
                 }
                 case TemplatingWorkerResponseKind.Compile: {
                     setTimings((timings) => [timings[0], Date.now()]);
                     downloadPdf(event.data.data, `${event.data.templateId}_${Date.now()}.pdf`);
+                    setError(undefined);
+                    break;
+                }
+                case TemplatingWorkerResponseKind.Error: {
+                    setTimings((timings) => [timings[0], Date.now()]);
+                    setError(event.data.error);
                     break;
                 }
                 case TemplatingWorkerResponseKind.Datasets: {
@@ -279,6 +298,8 @@ export const TemplateProvider: FC<PropsWithChildren> = ({ children }) => {
                 templateId,
                 defaultJsonDatasets,
                 workerState,
+                error,
+                clearError,
             }}
         >
             {children}

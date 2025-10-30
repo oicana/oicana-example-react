@@ -37,6 +37,7 @@ export enum TemplatingWorkerResponseKind {
     Compile,
     Datasets,
     Source,
+    Error,
 }
 
 export type TemplatingWorkerResponse =
@@ -58,6 +59,11 @@ export type TemplatingWorkerResponse =
           key: string;
           file: string;
           value: string;
+      }
+    | {
+          kind: TemplatingWorkerResponseKind.Error;
+          templateId: string;
+          error: string;
       };
 
 export enum TemplatingWorkerRequestKind {
@@ -107,6 +113,12 @@ const postMessage = (port: MessagePort, message: TemplatingWorkerResponse) => {
         default:
             port.postMessage(message);
     }
+};
+
+const handleError = (port: MessagePort, templateId: string, e: unknown) => {
+    console.error(`Error: ${e}`);
+    const error = e instanceof Error ? e.message : String(e);
+    postMessage(port, { kind: TemplatingWorkerResponseKind.Error, templateId, error });
 };
 
 const isReady = async () => {
@@ -164,7 +176,7 @@ addEventListener('connect', async (event: Event) => {
                     const data = template.compile(jsonInput, blobInput, { format: 'png', pixelsPerPt });
                     postMessage(port, { kind: TemplatingWorkerResponseKind.Preview, data, templateId });
                 } catch (e) {
-                    console.error(e);
+                    handleError(port, event.data.templateId, e);
                 }
                 break;
             }
@@ -175,7 +187,7 @@ addEventListener('connect', async (event: Event) => {
                     const data = template.compile(jsonInput, blobInput, { format: 'pdf' });
                     postMessage(port, { kind: TemplatingWorkerResponseKind.Compile, data, templateId });
                 } catch (e) {
-                    console.error(e);
+                    handleError(port, event.data.templateId, e);
                 }
                 break;
             }
@@ -186,7 +198,7 @@ addEventListener('connect', async (event: Event) => {
                     const { inputs } = template.inputs();
                     postMessage(port, { kind: TemplatingWorkerResponseKind.Datasets, inputs, templateId });
                 } catch (e) {
-                    console.error(e);
+                    handleError(port, event.data.templateId, e);
                 }
                 break;
             }
@@ -197,7 +209,7 @@ addEventListener('connect', async (event: Event) => {
                     const source = template.source(file);
                     postMessage(port, { kind: TemplatingWorkerResponseKind.Source, value: source, file, key });
                 } catch (e) {
-                    console.error(e);
+                    handleError(port, event.data.templateId, e);
                 }
                 break;
             }

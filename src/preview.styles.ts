@@ -20,13 +20,30 @@ export const PreviewContent = styled.div`
     display: flex;
     flex-grow: 1;
     height: calc(100vh - ${headerHeight}px);
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+    }
 `;
 
 export const PreviewOutputContainer = styled.div`
     background-color: grey;
-    height: 100%;
-    overflow-y: scroll;
     width: 50%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    @media (max-width: 600px) {
+        width: 100%;
+    }
+`;
+
+export const PreviewImageContainer = styled.div`
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `;
 
 export const PreviewOutput = styled.img`
