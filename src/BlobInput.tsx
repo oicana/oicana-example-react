@@ -1,7 +1,6 @@
 import { ChangeEvent, FC, useState } from 'react';
 import { imageMimeToTypstFormat } from './imageMimeToTypstFormat.ts';
 import { useTemplate } from './TemplateProvider.tsx';
-import { BlobWithMetadata } from '../../oicana/integrations/browser/oicana-browser';
 import { Box, Button, Card, CardContent, Chip, Typography } from '@mui/material';
 import { VisuallyHiddenInput } from './preview.styles.ts';
 
