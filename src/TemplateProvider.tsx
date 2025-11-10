@@ -16,12 +16,7 @@ import {
     TemplatingWorkerResponse,
     TemplatingWorkerResponseKind,
 } from './templating.worker.ts';
-import {
-    BlobInputDefinition,
-    BlobWithMetadata,
-    Inputs,
-    JsonInputDefinition,
-} from '../../oicana/integrations/browser/oicana-browser';
+import { BlobInputDefinition, BlobWithMetadata, Inputs, JsonInputDefinition } from '@oicana/browser';
 import { useTemplates } from './LoadingContext.tsx';
 
 interface TemplateState {

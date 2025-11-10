@@ -39,12 +39,7 @@ export const BlobInput: FC<BlobInputProps> = ({ dataset }) => {
                     File Input
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Button
-                        component="label"
-                        variant="contained"
-                        fullWidth
-                        sx={{ py: 1.5 }}
-                    >
+                    <Button component="label" variant="contained" fullWidth sx={{ py: 1.5 }}>
                         {`Select ${dataset} file`}
                         <VisuallyHiddenInput type="file" onChange={onImageChange} />
                     </Button>
