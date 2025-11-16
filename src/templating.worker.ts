@@ -1,4 +1,11 @@
-import { BlobInputDefinition, BlobWithMetadata, initialize, JsonInputDefinition, Template } from '@oicana/browser';
+import {
+    BlobInputDefinition,
+    BlobWithMetadata,
+    CompilationMode,
+    initialize,
+    JsonInputDefinition,
+    Template,
+} from '@oicana/browser';
 import wasmUrl from '@oicana/browser-wasm/oicana_browser_wasm_bg.wasm?url';
 
 const templateFiles: Map<string, Promise<Uint8Array>> = new Map();
@@ -138,7 +145,7 @@ const getTemplate = async (templateId: string, templatePath: string): Promise<Te
     if (!templateCache.has(templateId)) {
         const prepareTemplate = async () => {
             const files = await loadTemplate(templatePath);
-            return new Template(templateId, files);
+            return new Template(files);
         };
         templateCache.set(templateId, prepareTemplate());
     }
@@ -173,7 +180,12 @@ addEventListener('connect', async (event: Event) => {
                 try {
                     const { templateId, templatePath, pixelsPerPt, jsonInput, blobInput } = event.data;
                     const template = await getTemplate(templateId, templatePath);
-                    const data = template.compile(jsonInput, blobInput, { format: 'png', pixelsPerPt });
+                    const data = template.compile(
+                        jsonInput,
+                        blobInput,
+                        { format: 'png', pixelsPerPt },
+                        CompilationMode.Development,
+                    );
                     postMessage(port, { kind: TemplatingWorkerResponseKind.Preview, data, templateId });
                 } catch (e) {
                     handleError(port, event.data.templateId, e);
@@ -184,7 +196,7 @@ addEventListener('connect', async (event: Event) => {
                 try {
                     const { templateId, templatePath, jsonInput, blobInput } = event.data;
                     const template = await getTemplate(templateId, templatePath);
-                    const data = template.compile(jsonInput, blobInput, { format: 'pdf' });
+                    const data = template.compile(jsonInput, blobInput, { format: 'pdf' }, CompilationMode.Development);
                     postMessage(port, { kind: TemplatingWorkerResponseKind.Compile, data, templateId });
                 } catch (e) {
                     handleError(port, event.data.templateId, e);
