@@ -223,7 +223,6 @@ export const Preview: FC = () => {
                                         sx={{
                                             maxWidth: '100%',
                                             height: 'auto',
-                                            borderRadius: 1,
                                         }}
                                     />
                                 ) : (
